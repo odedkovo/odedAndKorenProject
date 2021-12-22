@@ -16,20 +16,19 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
     });
     const myLatlng = { lat: lat, lng: lng };
     let infoWindow = new google.maps.InfoWindow({
-      content: "Click the map to get Lat/Lng!",
+      content: 'Click the map to get Lat/Lng!',
       position: myLatlng,
     });
     infoWindow.open(gMap);
-    gMap.addListener("click", (ev) => {
+    gMap.addListener('click', (ev) => {
       // Close the current InfoWindow.
       infoWindow.close();
       // Create a new InfoWindow.
       infoWindow = new google.maps.InfoWindow({
         position: ev.latLng,
       });
-      infoWindow.setContent(
-        JSON.stringify(ev.latLng.toJSON(), null, 2)
-      );
+      console.log(infoWindow.position);
+      infoWindow.setContent(JSON.stringify(ev.latLng.toJSON(), null, 2));
       infoWindow.open(gMap);
     });
     console.log('Map!', gMap);
