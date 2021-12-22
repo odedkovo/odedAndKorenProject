@@ -6,6 +6,8 @@ window.onAddMarker = onAddMarker;
 window.onPanTo = onPanTo;
 window.onGetLocs = onGetLocs;
 window.onGetUserPos = onGetUserPos;
+window.onDeleteLocation = onDeleteLocation;
+window.onGoToLocation = onGoToLocation;
 
 function onInit() {
   mapService
@@ -39,7 +41,7 @@ function onGetLocs() {
 function onGetUserPos() {
   getPosition()
     .then((pos) => {
-      mapService.initMap(pos.coords.latitude, pos.coords.longitude);
+      mapService.panTo(pos.coords.latitude, pos.coords.longitude);
       console.log('User position is:', pos.coords);
       document.querySelector(
         '.user-pos'
@@ -57,7 +59,6 @@ function onPanTo() {
 
 function renderUsersLocations(locations) {
   document.querySelector('.table').hidden = false;
-  console.log(locations);
   var strHTMLs = locations.map((location) => {
     return `<tr>
     <td>${location.id}</td>
@@ -67,7 +68,19 @@ function renderUsersLocations(locations) {
     <td>${location.weather}</td>
     <td>${location.createdAt}</td>
     <td>${location.updatedAt}</td>
+    <td><button onclick="onGoToLocation('${location.lat}','${location.lng}')">Go</button></td>
+		<td><button onclick="onDeleteLocation('${location.id}')">Delete</button></td>
     </tr>`;
   });
   document.querySelector('tbody').innerHTML = strHTMLs.join('');
 }
+
+function onDeleteLocation(id) {
+  mapService.deleteLocation(id, renderUsersLocations);
+}
+
+function onGoToLocation(lat, lng) {
+  mapService.goToLocation(lat, lng, renderUsersLocations)
+}
+
+

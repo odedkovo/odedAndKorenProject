@@ -4,16 +4,18 @@ export const mapService = {
   initMap,
   addMarker,
   panTo,
+  deleteLocation,
+  goToLocation
 };
 
 const STORAGE_KEY = 'userLocationsDB';
 
 var gMap;
 
-function initMap(lat = 32.0749831, lng = 34.9120554, cb) {
+function initMap(lat = 32.0749831, lng = 34.9120554, cb = false) {
+  console.log('cb:', cb);
   var usersLocations = storageService.load(STORAGE_KEY);
-  console.log(usersLocations);
-  if (usersLocations) cb(usersLocations);
+  if (usersLocations && cb) cb(usersLocations);
   console.log('InitMap');
   return _connectGoogleApi().then(() => {
     console.log('google available');
@@ -34,26 +36,24 @@ function initMap(lat = 32.0749831, lng = 34.9120554, cb) {
       infoWindow = new google.maps.InfoWindow({
         position: ev.latLng,
       });
-
       infoWindow.setContent(JSON.stringify(ev.latLng.toJSON(), null, 2));
       infoWindow.open(gMap);
 
       const userLocationData = {
         id: 100,
         name: prompt('enter your name'),
-        lat: lat,
-        lng: lng,
+        lat: ev.latLng.toJSON().lat,
+        lng: ev.latLng.toJSON().lng,
         weather: 0,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
 
       var usersData = storageService.load(STORAGE_KEY);
-      console.log(usersData);
-      if (!usersData) {
+      if ((!usersData || usersData.length === 0) && cb) {
         storageService.save(STORAGE_KEY, [userLocationData]);
         cb([userLocationData]);
-      } else {
+      } else if (cb) {
         userLocationData.id = usersData[usersData.length - 1].id + 1;
         usersData.push(userLocationData);
         storageService.save(STORAGE_KEY, usersData);
@@ -89,4 +89,17 @@ function _connectGoogleApi() {
     elGoogleApi.onload = resolve;
     elGoogleApi.onerror = () => reject('Google script failed to load');
   });
+}
+
+function deleteLocation(id, cb) {
+  var locations = storageService.load(STORAGE_KEY);
+  var idx = locations.findIndex(location => location.id === id);
+  locations.splice(idx, 1);
+  storageService.save(STORAGE_KEY, locations);
+  cb(locations);
+}
+
+function goToLocation(lat, lng, cb) {
+  console.log(lat, lng);
+  panTo(lat, lng)
 }
