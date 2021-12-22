@@ -92,7 +92,6 @@ function onSearchLocation(ev, value) {
 }
 
 function saveUrl(lat, lng) {
-  console.log('hihi');
   var url = window.location.href + '?lat=' + lat + '&' + 'lng=' + lng;
   console.log(url);
   navigator.clipboard.writeText(url);
