@@ -1,8 +1,12 @@
+import { storageService } from './storage.service.js';
+
 export const mapService = {
   initMap,
   addMarker,
   panTo,
 };
+
+const STORAGE_KEY = 'userLocationsDB';
 
 var gMap;
 
@@ -27,9 +31,28 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
       infoWindow = new google.maps.InfoWindow({
         position: ev.latLng,
       });
-      console.log(infoWindow.position);
+
       infoWindow.setContent(JSON.stringify(ev.latLng.toJSON(), null, 2));
       infoWindow.open(gMap);
+
+      const userLocationData = {
+        id: 100,
+        name: prompt('enter your name'),
+        lat: lat,
+        lng: lng,
+        weather: 0,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      var usersData = storageService.load(STORAGE_KEY);
+      console.log(usersData);
+      if (!usersData) storageService.save(STORAGE_KEY, [userLocationData]);
+      else {
+        userLocationData.id = usersData[usersData.length - 1].id + 1;
+        usersData.push(userLocationData);
+        storageService.save(STORAGE_KEY, usersData);
+      }
     });
     console.log('Map!', gMap);
   });
