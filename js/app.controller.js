@@ -8,6 +8,7 @@ window.onGetLocs = onGetLocs;
 window.onGetUserPos = onGetUserPos;
 window.onDeleteLocation = onDeleteLocation;
 window.onGoToLocation = onGoToLocation;
+window.onSearchLocation = onSearchLocation;
 
 function onInit() {
   mapService
@@ -80,7 +81,22 @@ function onDeleteLocation(id) {
 }
 
 function onGoToLocation(lat, lng) {
-  mapService.goToLocation(lat, lng, renderUsersLocations)
+  mapService.goToLocation(lat, lng, renderUsersLocations);
 }
 
+function onSearchLocation(ev, value) {
+  ev.preventDefault();
+  console.log(value);
+  mapService.sendToLocation(value, renderUsersLocations);
+}
 
+function changeUrl() {
+  window.location.search
+    .replace('?', '')
+    .split('&')
+    .reduce((acc, param) => {
+      param = param.split('=');
+      acc[param[0]] = param[1];
+      return acc;
+    }, {});
+}

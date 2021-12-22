@@ -5,7 +5,8 @@ export const mapService = {
   addMarker,
   panTo,
   deleteLocation,
-  goToLocation
+  goToLocation,
+  sendToLocation,
 };
 
 const STORAGE_KEY = 'userLocationsDB';
@@ -93,7 +94,7 @@ function _connectGoogleApi() {
 
 function deleteLocation(id, cb) {
   var locations = storageService.load(STORAGE_KEY);
-  var idx = locations.findIndex(location => location.id === id);
+  var idx = locations.findIndex((location) => location.id === id);
   locations.splice(idx, 1);
   storageService.save(STORAGE_KEY, locations);
   cb(locations);
@@ -101,5 +102,36 @@ function deleteLocation(id, cb) {
 
 function goToLocation(lat, lng, cb) {
   console.log(lat, lng);
-  panTo(lat, lng)
+  panTo(lat, lng);
+}
+
+function sendToLocation(value, cb) {
+  console.log(value);
+  const xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      const ans = JSON.parse(xhr.responseText);
+      var lat = ans.results[0].geometry.location.lat;
+      var lng = ans.results[0].geometry.location.lng;
+      panTo(lat, lng);
+      var locations = storageService.load(STORAGE_KEY);
+      locations.push({
+        id: locations[length - 1].id + 1,
+        name: value,
+        lat: lat,
+        lng: lng,
+        weather: 0,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      storageService.save(STORAGE_KEY, locations);
+      cb(locations);
+    }
+  };
+  xhr.open(
+    'GET',
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${value}+&key=${apiService.GEOCODEAPI_KEY}`,
+    true
+  );
+  xhr.send();
 }
