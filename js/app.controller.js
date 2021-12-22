@@ -9,7 +9,7 @@ window.onGetUserPos = onGetUserPos;
 
 function onInit() {
   mapService
-    .initMap()
+    .initMap(undefined, undefined, renderUsersLocations)
     .then(() => {
       console.log('Map is ready');
     })
@@ -53,4 +53,21 @@ function onGetUserPos() {
 function onPanTo() {
   console.log('Panning the Map');
   mapService.panTo(35.6895, 139.6917);
+}
+
+function renderUsersLocations(locations) {
+  document.querySelector('.table').hidden = false;
+  console.log(locations);
+  var strHTMLs = locations.map((location) => {
+    return `<tr>
+    <td>${location.id}</td>
+    <td>${location.name}</td>
+    <td>${location.lat}</td>
+    <td>${location.lng}</td>
+    <td>${location.weather}</td>
+    <td>${location.createdAt}</td>
+    <td>${location.updatedAt}</td>
+    </tr>`;
+  });
+  document.querySelector('tbody').innerHTML = strHTMLs.join('');
 }

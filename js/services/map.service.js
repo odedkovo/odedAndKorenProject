@@ -1,5 +1,5 @@
 import { storageService } from './storage.service.js';
-
+import { apiService } from './api.service.js';
 export const mapService = {
   initMap,
   addMarker,
@@ -10,7 +10,10 @@ const STORAGE_KEY = 'userLocationsDB';
 
 var gMap;
 
-function initMap(lat = 32.0749831, lng = 34.9120554) {
+function initMap(lat = 32.0749831, lng = 34.9120554, cb) {
+  var usersLocations = storageService.load(STORAGE_KEY);
+  console.log(usersLocations);
+  if (usersLocations) cb(usersLocations);
   console.log('InitMap');
   return _connectGoogleApi().then(() => {
     console.log('google available');
@@ -47,11 +50,14 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
 
       var usersData = storageService.load(STORAGE_KEY);
       console.log(usersData);
-      if (!usersData) storageService.save(STORAGE_KEY, [userLocationData]);
-      else {
+      if (!usersData) {
+        storageService.save(STORAGE_KEY, [userLocationData]);
+        cb([userLocationData]);
+      } else {
         userLocationData.id = usersData[usersData.length - 1].id + 1;
         usersData.push(userLocationData);
         storageService.save(STORAGE_KEY, usersData);
+        cb(usersData);
       }
     });
     console.log('Map!', gMap);
@@ -74,9 +80,8 @@ function panTo(lat, lng) {
 
 function _connectGoogleApi() {
   if (window.google) return Promise.resolve();
-  const API_KEY = 'AIzaSyCyEVnrvvJpRys_Tzl0T2eg79GxEVj0JlQ'; //TODO: Enter your API Key
   var elGoogleApi = document.createElement('script');
-  elGoogleApi.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}`;
+  elGoogleApi.src = `https://maps.googleapis.com/maps/api/js?key=${apiService.API_KEY}`;
   elGoogleApi.async = true;
   document.body.append(elGoogleApi);
 
