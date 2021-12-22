@@ -36,8 +36,14 @@ function initMap(lat = 32.0749831, lng = 34.9120554, cb = false) {
       // Create a new InfoWindow.
       infoWindow = new google.maps.InfoWindow({
         position: ev.latLng,
+        content: `<div>lat:${ev.latLng.toJSON().lat} lng:${
+          ev.latLng.toJSON().lng
+        } 
+        <button onclick="saveUrl(${ev.latLng.toJSON().lat},${
+          ev.latLng.toJSON().lng
+        })">COPY URL</button> </div>`,
       });
-      infoWindow.setContent(JSON.stringify(ev.latLng.toJSON(), null, 2));
+      //,ev.latLng.toJSON(), null, 2));
       infoWindow.open(gMap);
 
       const userLocationData = {

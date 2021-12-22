@@ -9,6 +9,7 @@ window.onGetUserPos = onGetUserPos;
 window.onDeleteLocation = onDeleteLocation;
 window.onGoToLocation = onGoToLocation;
 window.onSearchLocation = onSearchLocation;
+window.saveUrl = saveUrl;
 
 function onInit() {
   mapService
@@ -90,13 +91,22 @@ function onSearchLocation(ev, value) {
   mapService.sendToLocation(value, renderUsersLocations);
 }
 
-function changeUrl() {
-  window.location.search
-    .replace('?', '')
-    .split('&')
-    .reduce((acc, param) => {
-      param = param.split('=');
-      acc[param[0]] = param[1];
-      return acc;
-    }, {});
+function saveUrl(lat, lng) {
+  console.log('hihi');
+  var url = window.location.href + '?lat=' + lat + '&' + 'lng=' + lng;
+  console.log(url);
+  changeUrl(url);
+
+  // window.location.search
+  //   .replace('?', '')
+  //   .split('&')
+  //   .reduce((acc, param) => {
+  //     param = param.split('=');
+  //     acc[param[0]] = param[1];
+  //     return acc;
+  //   }, {});
+}
+
+function changeUrl(url) {
+  window.location.search = url;
 }
