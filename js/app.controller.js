@@ -95,18 +95,7 @@ function saveUrl(lat, lng) {
   console.log('hihi');
   var url = window.location.href + '?lat=' + lat + '&' + 'lng=' + lng;
   console.log(url);
-  changeUrl(url);
-
-  // window.location.search
-  //   .replace('?', '')
-  //   .split('&')
-  //   .reduce((acc, param) => {
-  //     param = param.split('=');
-  //     acc[param[0]] = param[1];
-  //     return acc;
-  //   }, {});
+  navigator.clipboard.writeText(url);
 }
 
-function changeUrl(url) {
-  window.location.search = url;
-}
+

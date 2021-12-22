@@ -14,6 +14,12 @@ const STORAGE_KEY = 'userLocationsDB';
 var gMap;
 
 function initMap(lat = 32.0749831, lng = 34.9120554, cb = false) {
+  var data = urlHasData();
+  if (data) {
+    console.log(data);
+    lat = +data.lat;
+    lng = +data.lng;
+  }
   console.log('cb:', cb);
   var usersLocations = storageService.load(STORAGE_KEY);
   if (usersLocations && cb) cb(usersLocations);
@@ -36,14 +42,12 @@ function initMap(lat = 32.0749831, lng = 34.9120554, cb = false) {
       // Create a new InfoWindow.
       infoWindow = new google.maps.InfoWindow({
         position: ev.latLng,
-        content: `<div>lat:${ev.latLng.toJSON().lat} lng:${
-          ev.latLng.toJSON().lng
-        } 
-        <button onclick="saveUrl(${ev.latLng.toJSON().lat},${
-          ev.latLng.toJSON().lng
-        })">COPY URL</button> </div>`,
+        content: `<div>lat:${ev.latLng.toJSON().lat} lng:${ev.latLng.toJSON().lng
+          } 
+        <button onclick="saveUrl(${ev.latLng.toJSON().lat},${ev.latLng.toJSON().lng
+          })">COPY URL</button> </div>`,
       });
-      //,ev.latLng.toJSON(), null, 2));
+
       infoWindow.open(gMap);
 
       const userLocationData = {
@@ -140,4 +144,18 @@ function sendToLocation(value, cb) {
     true
   );
   xhr.send();
+}
+
+
+function urlHasData() {
+  console.log(window.location.search);
+  if (!window.location.search) return false
+  else if (!window.location.search.includes('?')) return false
+  var data = window.location.search.replace('?', '').split('&').reduce((acc, param) => {
+    param = param.split('=');
+    acc[param[0]] = param[1];
+    return acc;
+  }, {});
+  console.log(data);
+  return (data)
 }
